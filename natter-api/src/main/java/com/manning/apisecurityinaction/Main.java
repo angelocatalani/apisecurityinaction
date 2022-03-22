@@ -24,24 +24,17 @@ public class Main {
         database = Database.forDataSource(datasource);
         var spaceController = new SpaceController(database);
 
-        before(((request, response) -> {
-            if (request.requestMethod().equals("POST") &&
-            !"application/json".equals(request.contentType())) {
-                halt(415, new JSONObject().put(
-                    "error", "Only application/json supported"
-                ).toString());
-            }
-        }));
+        // before(((request, response) -> {
+        //     if (request.requestMethod().equals("POST") &&
+        //     !"application/json".equals(request.contentType())) {
+        //         halt(415, new JSONObject().put(
+        //             "error", "Only application/json supported"
+        //         ).toString());
+        //     }
+        // }));
 
         afterAfter((request, response) -> {
-            response.type("application/json;charset=utf-8");
-            response.header("X-Content-Type-Options", "nosniff");
-            response.header("X-Frame-Options", "DENY");
-            response.header("X-XSS-Protection", "0");
-            response.header("Cache-Control", "no-store");
-            response.header("Content-Security-Policy",
-                    "default-src 'none'; frame-ancestors 'none'; sandbox");
-            response.header("Server", "");
+            response.header("Content-Security-Policy", "script-src 'unsafe-inline'");
         });
 
         post("/spaces", spaceController::createSpace);
@@ -64,14 +57,14 @@ public class Main {
 
         exception(IllegalArgumentException.class, Main::badRequest);
         exception(JSONException.class, Main::badRequest);
-        exception(EmptyResultException.class,
-            (e, request, response) -> response.status(404));
+        // exception(EmptyResultException.class,
+        //     (e, request, response) -> response.status(404));
     }
 
   private static void badRequest(Exception ex,
       Request request, Response response) {
     response.status(400);
-    response.body(new JSONObject().put("error", ex.getMessage()).toString());
+    response.body("{\"error\": \"" + ex + "\"}");
   }
 
     private static void createTables(Database database) throws Exception {

